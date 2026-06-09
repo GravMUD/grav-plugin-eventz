@@ -1,0 +1,51 @@
+name: Eventz
+slug: grav-mud-eventz
+type: plugin
+version: 0.3.0
+description: Flat-file events + RSVP for Grav 2.0 — chapters, recurrence, Admin2 cockpit, iCal, messenger wire-ins.
+icon: calendar
+author:
+  name: FutureVision Labs · Team DC
+  email: chief@gravmud.site
+  url: https://gravmud.site
+homepage: https://eventz.gravmud.site
+bugs: https://github.com/GravMUD/grav-plugin-eventz/discussions
+docs: https://eventz.gravmud.site
+keywords: grav, events, rsvp, meetup, flat-file, admin2, ical, messenger
+license: MIT
+compatibility:
+  grav: ['2.0']
+dependencies:
+  - { name: grav, version: '>=2.0.0' }
+  - { name: admin2, version: '>=1.0.0' }
+  - { name: api, version: '>=1.0.0' }
+form:
+  validation: loose
+  fields:
+    enabled:
+      type: toggle
+      label: Plugin Status
+      highlight: 1
+      default: 1
+      options:
+        1: Enabled
+        0: Disabled
+      validate:
+        type: bool
+    api_route:
+      type: text
+      label: API route prefix
+      default: api/mud-eventz
+    public_route:
+      type: text
+      label: Public UI route (plain HTML — no .mud required)
+      default: eventz
+      help: Serves /eventz, /eventz/embed.js, /eventz/event/{slug} without a Grav page
+    notify_email:
+      type: email
+      label: Default organiser email (RSVP notifications)
+      default: chief@gravmud.site
+    default_messenger_group_prefix:
+      type: text
+      label: Messenger group prefix (future auto-wire)
+      default: event-

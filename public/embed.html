@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eventz embed</title>
+  <link rel="stylesheet" href="<!-- EVENTZ_PUBLIC_BASE -->/assets/mud-eventz.css">
+  <style>
+    body { margin: 0; padding: 0.75rem; background: transparent; color: #f5f0ff; font-family: system-ui, sans-serif; }
+  </style>
+</head>
+<body>
+  <div
+    class="mud-eventz"
+    data-mud-eventz
+    data-mode="<!-- EVENTZ_MODE -->"
+    data-event="<!-- EVENTZ_EVENT -->"
+    data-series="<!-- EVENTZ_SERIES -->"
+    data-api="<!-- EVENTZ_API -->"
+  ></div>
+  <script>
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var root = document.querySelector('[data-mud-eventz]');
+      if (!root) return;
+      if (q.get('mode')) root.setAttribute('data-mode', q.get('mode'));
+      if (q.get('event')) root.setAttribute('data-event', q.get('event'));
+      if (q.get('series')) root.setAttribute('data-series', q.get('series'));
+      window.GRAVMUD_EVENTZ_API = "<!-- EVENTZ_API -->";
+    })();
+  </script>
+  <script src="<!-- EVENTZ_PUBLIC_BASE -->/assets/mud-eventz.js"></script>
+</body>
+</html>

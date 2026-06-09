@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title><!-- EVENTZ_TITLE --> — flat-file RSVP</title>
+
+  <meta name="description" content="GravMUD Eventz — flat-file meetups and RSVP. No MUD page required. No Mobilizon. No Nitro.">
+
+  <link rel="stylesheet" href="<!-- EVENTZ_PUBLIC_BASE -->/assets/mud-eventz.css">
+
+  <style>
+
+    :root {
+
+      color-scheme: dark;
+
+    }
+
+    body {
+
+      margin: 0;
+
+      font-family: "Public Sans", "DM Sans", system-ui, sans-serif;
+
+      background:
+
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgb(124 58 237 / 0.18), transparent 55%),
+
+        radial-gradient(ellipse 60% 40% at 100% 20%, rgb(226 17 17 / 0.08), transparent 50%),
+
+        #07101c;
+
+      color: #f4f7fb;
+
+      line-height: 1.55;
+
+      min-height: 100vh;
+
+      -webkit-font-smoothing: antialiased;
+
+    }
+
+    .eventz-shell {
+
+      max-width: 52rem;
+
+      margin: 0 auto;
+
+      padding: 2rem 1.25rem 3rem;
+
+    }
+
+    .eventz-head h1 {
+
+      margin: 0 0 0.35rem;
+
+      font-size: clamp(1.75rem, 4vw, 2.35rem);
+
+      font-weight: 800;
+
+      letter-spacing: -0.03em;
+
+    }
+
+    .eventz-head p {
+
+      margin: 0.35rem 0 0;
+
+      color: #94a3b8;
+
+      max-width: 38rem;
+
+    }
+
+    .eventz-badge {
+
+      display: inline-block;
+
+      margin-bottom: 0.75rem;
+
+      padding: 0.28rem 0.7rem;
+
+      border-radius: 999px;
+
+      background: rgb(124 58 237 / 0.16);
+
+      border: 1px solid rgb(124 58 237 / 0.28);
+
+      color: #c4b5fd;
+
+      font-size: 0.78rem;
+
+      font-weight: 700;
+
+      letter-spacing: 0.04em;
+
+      text-transform: uppercase;
+
+    }
+
+    .eventz-foot {
+
+      margin-top: 2rem;
+
+      padding-top: 1.25rem;
+
+      border-top: 1px solid rgb(255 255 255 / 0.08);
+
+      font-size: 0.88rem;
+
+      color: #64748b;
+
+    }
+
+    .eventz-foot a { color: #a78bfa; }
+
+    .eventz-foot code {
+
+      font-size: 0.78rem;
+
+      padding: 0.12rem 0.35rem;
+
+      border-radius: 6px;
+
+      background: rgb(255 255 255 / 0.04);
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="eventz-shell">
+
+    <header class="eventz-head">
+
+      <span class="eventz-badge">Plain HTML · no .mud required</span>
+
+      <h1>GravMUD Eventz</h1>
+
+      <p>Flat-file meetups · RSVP · iCal · EvvyTink admin. Auntie Carol does not need Nitro.</p>
+
+    </header>
+
+
+
+    <div
+
+      class="mud-eventz"
+
+      data-mud-eventz
+
+      data-mode="<!-- EVENTZ_MODE -->"
+
+      data-event="<!-- EVENTZ_EVENT -->"
+
+      data-series="<!-- EVENTZ_SERIES -->"
+
+      data-chapter="<!-- EVENTZ_CHAPTER -->"
+
+      data-api="<!-- EVENTZ_API -->"
+
+    >
+
+      <p class="mud-eventz-loading">Loading events…</p>
+
+    </div>
+
+
+
+    <footer class="eventz-foot">
+
+      <p>Powered by <strong>GravMUD Eventz</strong> · FutureVision Labs · Team DC</p>
+
+      <p>Also embed anywhere: <code>&lt;div data-mud-eventz data-series="getgrav-global"&gt;&lt;/div&gt;</code> + <code>&lt;script src="<!-- EVENTZ_PUBLIC_BASE -->/embed.js"&gt;&lt;/script&gt;</code></p>
+
+    </footer>
+
+  </div>
+
+
+
+  <script>window.GRAVMUD_EVENTZ_API = "<!-- EVENTZ_API -->";</script>
+
+  <script src="<!-- EVENTZ_PUBLIC_BASE -->/assets/mud-eventz.js"></script>
+
+</body>
+
+</html>
+

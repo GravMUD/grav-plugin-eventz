@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GravMUD Eventz — Flat-file events + RSVP</title>
+  <meta name="description" content="Mobilizon energy without the monolith. Chapters, recurrence, iCal, Admin2 cockpit, Messenger wire-ins. MIT · Team DC.">
+  <meta property="og:title" content="GravMUD Eventz">
+  <meta property="og:description" content="Show up IRL. RSVP in JSON. Pizza math included. 📅">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060b14;
+      --fg: #eef6ff;
+      --muted: #8ba3c7;
+      --violet: #8b5cf6;
+      --cyan: #22d3ee;
+      --mint: #34d399;
+      --gold: #fbbf24;
+      --card: rgba(139, 92, 246, 0.06);
+      --border: rgba(34, 211, 238, 0.16);
+      --glow: rgba(139, 92, 246, 0.45);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 15% -5%, rgba(139, 92, 246, 0.32), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 95% 15%, rgba(34, 211, 238, 0.28), transparent 50%),
+        radial-gradient(ellipse 60% 45% at 50% 110%, rgba(52, 211, 153, 0.18), transparent 55%),
+        linear-gradient(180deg, #0a1020 0%, var(--bg) 45%, #040810 100%);
+      z-index: -2;
+      animation: aurora 20s ease-in-out infinite alternate;
+    }
+    @keyframes aurora {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(18deg); }
+    }
+    .grain {
+      position: fixed;
+      inset: 0;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: -1;
+    }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      backdrop-filter: blur(14px);
+      background: rgba(6, 11, 20, 0.78);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-decoration: none;
+      color: var(--fg);
+    }
+    .logo span { color: var(--cyan); }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-violet {
+      background: linear-gradient(135deg, var(--violet), #6d28d9);
+      color: #fff;
+      box-shadow: 0 0 28px var(--glow);
+    }
+    .btn-cyan {
+      background: linear-gradient(135deg, #0891b2, var(--cyan));
+      color: #042f2e;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid var(--border);
+    }
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--cyan);
+    }
+    .pill.hot { color: var(--gold); border-color: rgba(251, 191, 36, 0.35); }
+    .cal {
+      font-size: 4rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      animation: floatCal 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 24px rgba(34, 211, 238, 0.45));
+    }
+    @keyframes floatCal {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2.4rem, 8vw, 4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin: 0 0 1rem;
+      letter-spacing: -0.03em;
+    }
+    h1 .gradient {
+      background: linear-gradient(135deg, var(--cyan), var(--violet), var(--mint));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-sub {
+      font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+      color: var(--muted);
+      max-width: 680px;
+      margin: 0 auto 1.25rem;
+    }
+    .hero-quote {
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--cyan);
+      margin-bottom: 2rem;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+    .ticker-wrap {
+      overflow: hidden;
+      border-block: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      padding: 0.65rem 0;
+      margin: 2.5rem 0 0;
+    }
+    .ticker {
+      display: flex;
+      gap: 3rem;
+      animation: ticker 32s linear infinite;
+      white-space: nowrap;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    section { max-width: 1100px; margin: 0 auto; padding: 3.5rem 1.5rem; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mint);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      margin: 0 0 1rem;
+      letter-spacing: -0.02em;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat {
+      text-align: center;
+      padding: 1.25rem 0.75rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .stat b {
+      display: block;
+      font-family: 'Sora', sans-serif;
+      font-size: 2rem;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .stat span { font-size: 0.82rem; color: var(--muted); }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .feature {
+      padding: 1.35rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature:hover {
+      border-color: rgba(139, 92, 246, 0.45);
+      transform: translateY(-3px);
+    }
+    .feature-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .feature h3 {
+      font-family: 'Sora', sans-serif;
+      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+    }
+    .feature p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+    .stack-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .stack-chip {
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .stack-chip.ok { border-color: rgba(52, 211, 153, 0.4); color: var(--mint); }
+    .terminal {
+      background: #030712;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.25rem 1.35rem;
+      font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+      font-size: 0.88rem;
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.12);
+    }
+    .terminal .prompt { color: var(--mint); }
+    .terminal .comment { color: #5b6b8a; margin-top: 0.75rem; display: block; }
+    footer {
+      text-align: center;
+      padding: 3rem 1.5rem 4rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    footer a { color: var(--cyan); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 600px) {
+      .nav-links .btn-ghost { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a class="logo" href="#">📅 Event<span>z</span></a>
+    <div class="nav-links">
+      <a class="btn btn-ghost" href="#features">Features</a>
+      <a class="btn btn-ghost" href="#install">Install</a>
+      <a class="btn btn-violet" href="https://github.com/GravMUD/grav-plugin-eventz/releases">Get it FREE</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="pill-row">
+      <span class="pill hot">MIT · Free forever</span>
+      <span class="pill">Grav 2.0</span>
+      <span class="pill">Flat-file</span>
+      <span class="pill">Team DC</span>
+    </div>
+    <span class="cal" aria-hidden="true">📅</span>
+    <h1>Events that<br><span class="gradient">show up IRL</span></h1>
+    <p class="hero-sub"><strong>Eventz</strong> — chapters, recurrence, RSVP, iCal export, public embeds, Admin2 cockpit, and Messenger group wire-ins. Mobilizon without Postgres, Elixir, or purple monolith cosplay.</p>
+    <p class="hero-quote">"Pizza math belongs in JSON, not a federated database."</p>
+    <div class="hero-actions">
+      <a class="btn btn-violet" href="https://github.com/GravMUD/grav-plugin-eventz">⭐ Star on GitHub</a>
+      <a class="btn btn-cyan" href="https://github.com/GravMUD/grav-plugin-eventz/releases">Download release</a>
+      <a class="btn btn-ghost" href="https://gravmud.site">GravMUD HQ</a>
+    </div>
+    <div class="ticker-wrap" aria-hidden="true">
+      <div class="ticker">
+        <span>flat-file JSON</span><span>·</span><span>chapters + recurrence</span><span>·</span><span>ical export</span><span>·</span><span>admin2 cockpit</span><span>·</span><span>messenger wire</span><span>·</span><span>embed.js</span><span>·</span><span>no .mud required</span><span>·</span><span>getgrav meetups</span><span>·</span>
+        <span>flat-file JSON</span><span>·</span><span>chapters + recurrence</span><span>·</span><span>ical export</span><span>·</span><span>admin2 cockpit</span><span>·</span><span>messenger wire</span><span>·</span><span>embed.js</span><span>·</span><span>no .mud required</span><span>·</span><span>getgrav meetups</span><span>·</span>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <p class="section-label">Social stack pillar</p>
+    <h2>Fourth LEGO brick. Same receipt.</h2>
+    <div class="stats">
+      <div class="stat"><b>0</b><span>SQL databases</span></div>
+      <div class="stat"><b>∞</b><span>meetup energy</span></div>
+      <div class="stat"><b>1</b><span>ical per event</span></div>
+      <div class="stat"><b>$0</b><span>forever MIT</span></div>
+    </div>
+    <div class="stack-row">
+      <span class="stack-chip ok">grav-mud-messenger</span>
+      <span class="stack-chip ok">grav-mud-goggrav</span>
+      <span class="stack-chip ok">admin2 + api</span>
+      <span class="stack-chip ok">evvytink admin</span>
+    </div>
+  </section>
+
+  <section id="features">
+    <p class="section-label">Why it hits different</p>
+    <h2>Not another calendar SaaS.</h2>
+    <div class="grid-3">
+      <div class="feature">
+        <div class="feature-icon">📂</div>
+        <h3>Flat-file storage</h3>
+        <p>Events + RSVPs in <code>user/data/mud-eventz/</code>. cPanel-friendly. Git-friendly. Mortal-friendly.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔁</div>
+        <h3>Chapters &amp; recurrence</h3>
+        <p>Series hubs, recurring meetups, global chapters — GetGRAV! pilots without Mobilizon ops.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <h3>Messenger wire</h3>
+        <p>Save an event in Admin2 → chat group auto-created in GravFans Messenger. Groundswell in one click.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📆</div>
+        <h3>iCal + embed</h3>
+        <p>Per-event calendar downloads. <code>/eventz/embed.js</code> for any page — no <code>.mud</code> required.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🧪</div>
+        <h3>Admin2 native</h3>
+        <p>Custom Eventz page — RSVP export, close/reopen, live messenger wire status. API bridge for Grav 2.0.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🍕</div>
+        <h3>GetGRAV! ready</h3>
+        <p>Brisbane pilot, Denver chapters, meetup RSVP — goggrav delegates here. Pizza math included.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <p class="section-label">Ship it</p>
+    <h2>Install in sixty seconds.</h2>
+    <div class="terminal">
+      <span class="prompt">grav $</span> bin/gpm direct-install https://github.com/GravMUD/grav-plugin-eventz/releases/download/0.3.0/grav-mud-eventz.zip<br>
+      <span class="prompt">grav $</span> bin/gpm direct-install https://github.com/GravMUD/grav-plugin-eventz/releases/download/0.3.0/grav-plugin-eventz.zip<br>
+      <span class="comment"># Engine + Admin2 page shell · Needs Grav 2.0 + admin2 + api · Clear cache → enable both plugins</span>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>FutureVision Labs · Team DC · GravMUD Social Stack</strong></p>
+    <p>
+      <a href="https://github.com/GravMUD/grav-plugin-eventz">GitHub</a> ·
+      <a href="https://github.com/GravMUD/grav-plugin-eventz/discussions">Discussions</a> ·
+      <a href="https://javabean.gravmud.site">JavaBean</a> ·
+      <a href="https://gravfans.live">GravFans.Live</a>
+    </p>
+    <p>MIT licensed · free forever · groundswell not fork</p>
+  </footer>
+</body>
+</html>
