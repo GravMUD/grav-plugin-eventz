@@ -1,6 +1,6 @@
 <?php
 
-namespace Grav\Plugin\GravMudEventz;
+namespace Grav\Plugin\Eventz;
 
 /**
  * Flat-file recurrence — one JSON per occurrence, no RRULE engine.

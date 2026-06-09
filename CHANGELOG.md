@@ -1,8 +1,18 @@
+# v0.4.0
+## 06/09/2026
+
+1. [](#improved)
+    * **Single plugin** — merged `grav-mud-eventz` engine + Admin2 shell into one `eventz` package (Andy-good-citizen lane)
+    * Config key `plugins.eventz` (reads legacy `plugins.grav-mud-eventz` if present)
+    * Runtime Admin2 registration only — no `admin-next.yaml` writes
+2. [](#bugfix)
+    * GPM: one zip `grav-plugin-eventz.zip`, one slug `eventz`
+
 # v0.3.0
 ## 06/09/2026
 
 1. [](#new)
-    * **GPM release** — GitHub repo, docs site at [eventz.gravmud.site](https://eventz.gravmud.site), companion `eventz` Admin2 shell
+    * **GPM release** — GitHub repo, docs site at [eventz.gravmud.site](https://eventz.gravmud.site)
     * **Messenger wire** — auto-create chat groups on event save (`MudEventzWire` + `MudMessengerGroups::upsert`)
     * **Admin2 Eventz page** — chapters, recurrence, messenger wire status on save
 2. [](#improved)

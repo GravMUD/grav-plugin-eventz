@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Grav\Plugin\GravMudEventz;
+namespace Grav\Plugin\Eventz;
 
 use Grav\Common\Config\Config;
 use Grav\Plugin\Api\Controllers\AbstractApiController;

@@ -3,13 +3,14 @@
 namespace Grav\Plugin;
 
 use Grav\Common\Plugin;
-use Grav\Plugin\GravMudEventz\MudEventzAdminBridgeController;
-use Grav\Plugin\GravMudEventz\MudEventzApiBridgeController;
-use Grav\Plugin\GravMudEventz\MudEventzRouter;
-use Grav\Plugin\GravMudEventz\MudEventzSite;
+use Grav\Plugin\Eventz\MudEventzAdminBridgeController;
+use Grav\Plugin\Eventz\MudEventzApiBridgeController;
+use Grav\Plugin\Eventz\MudEventzFences;
+use Grav\Plugin\Eventz\MudEventzRouter;
+use Grav\Plugin\Eventz\MudEventzSite;
 use RocketTheme\Toolbox\Event\Event;
 
-class GravMudEventzPlugin extends Plugin
+class EventzPlugin extends Plugin
 {
     public const ADMIN_PAGE_SLUG = 'eventz';
 
@@ -33,6 +34,21 @@ class GravMudEventzPlugin extends Plugin
         return $events;
     }
 
+    /** @return array<string, mixed> */
+    public static function pluginConfig($grav): array
+    {
+        if (!is_object($grav) || !isset($grav['config'])) {
+            return [];
+        }
+
+        $cfg = (array) $grav['config']->get('plugins.eventz', []);
+        if ($cfg !== []) {
+            return $cfg;
+        }
+
+        return (array) $grav['config']->get('plugins.grav-mud-eventz', []);
+    }
+
     public function onPluginsInitializedEarly(): void
     {
         if (!$this->isEnabled()) {
@@ -48,7 +64,7 @@ class GravMudEventzPlugin extends Plugin
             require_once __DIR__ . '/classes/MudEventz.php';
         }
 
-        $cfg = (array) $this->grav['config']->get('plugins.grav-mud-eventz', []);
+        $cfg = self::pluginConfig($this->grav);
         $path = trim((string) $this->grav['uri']->path(), '/');
 
         if (MudEventzSite::matchesPublicPath($path, $cfg)) {
@@ -62,7 +78,7 @@ class GravMudEventzPlugin extends Plugin
             return;
         }
 
-        $cfg = (array) $this->grav['config']->get('plugins.grav-mud-eventz', []);
+        $cfg = self::pluginConfig($this->grav);
         require_once __DIR__ . '/classes/MudEventzSite.php';
         require_once __DIR__ . '/classes/MudEventzRouter.php';
         (new MudEventzRouter($this->grav, $cfg))->handle();
@@ -77,7 +93,7 @@ class GravMudEventzPlugin extends Plugin
         }
 
         require_once __DIR__ . '/classes/MudEventz.php';
-        (new \Grav\Plugin\GravMudEventz\MudEventz($this->grav))->handle($action);
+        (new \Grav\Plugin\Eventz\MudEventz($this->grav))->handle($action);
         exit;
     }
 
@@ -129,7 +145,7 @@ class GravMudEventzPlugin extends Plugin
     public function onApiPluginPageInfo(Event $event): void
     {
         $plugin = (string) ($event['plugin'] ?? '');
-        if (!$this->isEnabled() || !in_array($plugin, [self::ADMIN_PAGE_SLUG, 'grav-mud-eventz'], true)) {
+        if (!$this->isEnabled() || $plugin !== self::ADMIN_PAGE_SLUG) {
             return;
         }
 
@@ -172,26 +188,28 @@ class GravMudEventzPlugin extends Plugin
             return;
         }
 
-        $cfg = (array) $this->grav['config']->get('plugins.grav-mud-eventz', []);
+        $cfg = self::pluginConfig($this->grav);
         $route = MudEventzSite::apiRoute($cfg);
-        $base = rtrim((string) $this->grav['base_url'], '/');
         $publicRoute = MudEventzSite::publicRoute($cfg);
 
-        $this->grav['twig']->twig_vars['grav_mud_eventz'] = [
+        $this->grav['twig']->twig_vars['eventz'] = [
             'enabled' => true,
-            'name' => 'GravMUD Eventz',
-            'version' => '0.3.0',
+            'name' => 'Eventz',
+            'version' => '0.4.0',
             'api_route' => $route,
             'api' => MudEventzSite::apiBaseUrl($this->grav, $cfg),
             'public_route' => $publicRoute,
             'url' => MudEventzSite::publicBaseUrl($this->grav, $cfg),
             'embedScript' => MudEventzSite::publicBaseUrl($this->grav, $cfg) . '/embed.js',
         ];
+        $this->grav['twig']->twig_vars['grav_mud_eventz'] = $this->grav['twig']->twig_vars['eventz'];
     }
 
     private function isEnabled(): bool
     {
-        return (bool) $this->grav['config']->get('plugins.grav-mud-eventz.enabled', false);
+        $cfg = self::pluginConfig($this->grav);
+
+        return (bool) ($cfg['enabled'] ?? false);
     }
 
     /** @param Event $event */
@@ -203,7 +221,7 @@ class GravMudEventzPlugin extends Plugin
 
         require_once __DIR__ . '/classes/MudEventzFences.php';
 
-        $html = \Grav\Plugin\GravMudEventz\MudEventzFences::render(
+        $html = MudEventzFences::render(
             strtolower((string) ($event['type'] ?? '')),
             (array) ($event['node'] ?? []),
             (array) ($event['attrs'] ?? []),
@@ -218,7 +236,8 @@ class GravMudEventzPlugin extends Plugin
 
     private function apiAction(): ?string
     {
-        $route = trim((string) $this->grav['config']->get('plugins.grav-mud-eventz.api_route', 'api/mud-eventz'), '/');
+        $cfg = self::pluginConfig($this->grav);
+        $route = trim((string) ($cfg['api_route'] ?? 'api/mud-eventz'), '/');
         $path = trim((string) $this->grav['uri']->path(), '/');
 
         if ($path === $route) {

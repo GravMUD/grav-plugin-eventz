@@ -1,6 +1,6 @@
 <?php
 
-namespace Grav\Plugin\GravMudEventz;
+namespace Grav\Plugin\Eventz;
 
 use Grav\Common\Grav;
 
@@ -137,7 +137,7 @@ class MudEventzRouter
             '<!-- EVENTZ_CHAPTER -->' => htmlspecialchars($chapter, ENT_QUOTES, 'UTF-8'),
             '<!-- EVENTZ_TITLE -->' => $event !== ''
                 ? htmlspecialchars('Event RSVP', ENT_QUOTES, 'UTF-8')
-                : htmlspecialchars('GravMUD Eventz', ENT_QUOTES, 'UTF-8'),
+                : htmlspecialchars('Eventz', ENT_QUOTES, 'UTF-8'),
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $html);

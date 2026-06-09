@@ -1,6 +1,6 @@
 <?php
 
-namespace Grav\Plugin\GravMudEventz;
+namespace Grav\Plugin\Eventz;
 
 use Grav\Common\Grav;
 
@@ -161,7 +161,7 @@ class MudEventz
 
         echo "BEGIN:VCALENDAR\r\n"
             . "VERSION:2.0\r\n"
-            . "PRODID:-//GravMUD Eventz//EN\r\n"
+            . "PRODID:-//Eventz//EN\r\n"
             . "BEGIN:VEVENT\r\n"
             . "UID:{$uid}\r\n"
             . "SUMMARY:" . $this->icsEscape($title) . "\r\n"

@@ -1,9 +1,9 @@
 name: Eventz
-slug: grav-mud-eventz
+slug: eventz
 type: plugin
-version: 0.3.0
+version: 0.4.0
 description: Flat-file events + RSVP for Grav 2.0 — chapters, recurrence, Admin2 cockpit, iCal, messenger wire-ins.
-icon: calendar
+icon: calendar-days
 author:
   name: FutureVision Labs · Team DC
   email: chief@gravmud.site

@@ -1,6 +1,6 @@
 <?php
 
-namespace Grav\Plugin\GravMudEventz;
+namespace Grav\Plugin\Eventz;
 
 use Grav\Common\Grav;
 

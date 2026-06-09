@@ -1,6 +1,6 @@
 <?php
 
-namespace Grav\Plugin\GravMudEventz;
+namespace Grav\Plugin\Eventz;
 
 use Grav\Common\Grav;
 
@@ -272,9 +272,9 @@ class MudEventzStorage
     /** @return array<string, mixed> */
     public function pluginDefaults(): array
     {
-        $cfg = $this->grav['config']->get('plugins.grav-mud-eventz');
+        $cfg = \Grav\Plugin\EventzPlugin::pluginConfig($this->grav);
 
-        return is_array($cfg) ? $cfg : [];
+        return $cfg;
     }
 
     public function defaultNotifyEmail(): string

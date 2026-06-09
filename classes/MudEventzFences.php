@@ -1,10 +1,10 @@
 <?php
 
-namespace Grav\Plugin\GravMudEventz;
+namespace Grav\Plugin\Eventz;
 
 /**
  * Eventz MUD fences — embed RSVP / event lists in .mud pages (NOT core GravMUD spec).
- * Registered via onMudFenceRender from grav-mud-eventz.
+ * Registered via onMudFenceRender from eventz.
  */
 class MudEventzFences
 {
@@ -51,7 +51,7 @@ class MudEventzFences
         $head = $title !== '' ? '<h2>' . self::esc($title) . '</h2>' : '';
         $note = trim((string) ($data['note'] ?? ''));
         if ($note === '' && $mode === 'event') {
-            $note = 'Flat-file RSVP via grav-mud-eventz — zero Meetup tax · Chief reads the JSON.';
+            $note = 'Flat-file RSVP via Eventz — zero Meetup tax · Chief reads the JSON.';
         }
         $foot = $note !== '' ? '<p class="gg-muted-sm" style="margin-top:1rem;">' . self::inline($note) . '</p>' : '';
 
