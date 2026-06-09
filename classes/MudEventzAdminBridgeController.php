@@ -19,7 +19,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminRead($request);
 
         return ApiResponse::create($this->storage()->stats());
     }
@@ -29,7 +29,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminRead($request);
 
         return ApiResponse::create($this->storage()->listEvents());
     }
@@ -39,7 +39,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminRead($request);
         $slug = (string) ($request->getAttribute('route_params')['slug'] ?? '');
 
         return ApiResponse::create($this->storage()->listRsvpEntries($slug));
@@ -50,7 +50,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminRead($request);
         $slug = preg_replace('/[^a-z0-9_-]/', '', strtolower((string) ($request->getAttribute('route_params')['slug'] ?? ''))) ?: 'event';
 
         return ApiResponse::create([
@@ -65,7 +65,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminWrite($request);
         $slug = (string) ($request->getAttribute('route_params')['slug'] ?? '');
         $body = $this->getRequestBody($request);
         $body = is_array($body) ? $body : [];
@@ -79,7 +79,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminWrite($request);
         $body = $this->getRequestBody($request);
         if (!is_array($body)) {
             return ApiResponse::create(['ok' => false, 'error' => 'Expected JSON object.'], 422);
@@ -95,12 +95,12 @@ class MudEventzAdminBridgeController extends AbstractApiController
             return ApiResponse::create(null, 204);
         }
         if ($request->getMethod() === 'GET') {
-            $this->requirePermission($request, 'api.access');
+            $this->requireAdminRead($request);
 
             return ApiResponse::create($this->chaptersApi()->listChapters());
         }
         if ($request->getMethod() === 'POST') {
-            $this->requirePermission($request, 'api.access');
+            $this->requireAdminWrite($request);
             $body = $this->getRequestBody($request);
             if (!is_array($body)) {
                 return ApiResponse::create(['ok' => false, 'error' => 'Expected JSON object.'], 422);
@@ -117,7 +117,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminRead($request);
         $slug = (string) ($request->getAttribute('route_params')['slug'] ?? '');
 
         return ApiResponse::create($this->chaptersApi()->getChapter($slug, true));
@@ -128,7 +128,7 @@ class MudEventzAdminBridgeController extends AbstractApiController
         if ($request->getMethod() === 'OPTIONS') {
             return ApiResponse::create(null, 204);
         }
-        $this->requirePermission($request, 'api.access');
+        $this->requireAdminWrite($request);
         $slug = (string) ($request->getAttribute('route_params')['slug'] ?? '');
         $body = $this->getRequestBody($request);
         $options = is_array($body) ? $body : [];
@@ -163,5 +163,15 @@ class MudEventzAdminBridgeController extends AbstractApiController
         require_once __DIR__ . '/MudEventzRecurrence.php';
 
         return new MudEventzChapters($this->grav, $this->storage());
+    }
+
+    private function requireAdminRead(ServerRequestInterface $request): void
+    {
+        $this->requirePermission($request, 'api.config.read');
+    }
+
+    private function requireAdminWrite(ServerRequestInterface $request): void
+    {
+        $this->requirePermission($request, 'api.config.write');
     }
 }

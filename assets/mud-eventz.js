@@ -56,7 +56,7 @@
       esc(slug) +
       '">' +
       '<div class="mud-eventz-grid">' +
-      '<label class="mud-eventz-field"><span>Name</span><input name="name" required maxlength="120" autocomplete="name" placeholder="Damo / your name"></label>' +
+      '<label class="mud-eventz-field"><span>Name</span><input name="name" required maxlength="120" autocomplete="name" placeholder="Your name"></label>' +
       '<label class="mud-eventz-field"><span>Email</span><input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>' +
       '<label class="mud-eventz-field mud-eventz-field--narrow"><span>Guests (incl. you)</span><select name="guests">' +
       [1, 2, 3, 4, 5, 6, 7, 8]
@@ -66,9 +66,9 @@
         .join("") +
       "</select></label>" +
       "</div>" +
-      '<label class="mud-eventz-field"><span>Talk idea / dietary / note (optional)</span><textarea name="note" rows="3" maxlength="500" placeholder="WordPress refugee · vegetarian · demo idea…"></textarea></label>' +
+      '<label class="mud-eventz-field"><span>Note (optional)</span><textarea name="note" rows="3" maxlength="500" placeholder="Dietary needs, talk idea, accessibility…"></textarea></label>' +
       '<label class="mud-eventz-honey" aria-hidden="true"><span>Website</span><input name="website" tabindex="-1" autocomplete="off"></label>' +
-      '<div class="mud-eventz-actions"><button type="submit" class="mud-eventz-submit">RSVP — lock in pizza</button></div>' +
+      '<div class="mud-eventz-actions"><button type="submit" class="mud-eventz-submit">Submit RSVP</button></div>' +
       '<p class="mud-eventz-status" role="status"></p></form>'
     );
   }

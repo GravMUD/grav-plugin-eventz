@@ -1,3 +1,17 @@
+# v0.4.1
+## 06/05/2026
+
+1. [](#security)
+    * **Admin API** — PII/CSV/mutations gated on `api.config.read` / `api.config.write` (not bare `api.access`)
+    * **CSV export** — formula-injection prefix for cells starting with `=+-@`
+    * **RSVP mail** — CRLF stripped from names/subjects; `From:` from site email config (not hardcoded domain)
+2. [](#improved)
+    * **Data path** — `user-data://eventz/` via locator (not `GRAV_ROOT/user/data/mud-eventz`)
+    * **Defaults** — empty `notify_email`, plugin ships disabled; generic Admin2/embed copy (no site-specific slugs)
+    * **API bridge** — unconditional `onApi*` registration; removed legacy no-API fallback engine
+3. [](#bugfix)
+    * RSVP capacity + `max_rsvp_entries` guard on submit
+
 # v0.4.0
 ## 06/09/2026
 

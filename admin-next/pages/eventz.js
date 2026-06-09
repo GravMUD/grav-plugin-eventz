@@ -48,7 +48,7 @@
       this._booted = true;
       this._tab = 'rsvp';
       this._slug = '';
-      this._chapterSlug = 'brisbane';
+      this._chapterSlug = '';
       this._chapter = null;
       this.className = 'block h-full min-h-[28rem] text-foreground';
       this.innerHTML = `
@@ -101,7 +101,7 @@
                 <label class="block text-sm"><span class="mb-1 block text-muted-foreground">Slug</span>
                   <input data-f="slug" type="text" class="${INPUT}" pattern="[a-z0-9_-]+"></label>
                 <label class="block text-sm"><span class="mb-1 block text-muted-foreground">Series</span>
-                  <input data-f="series" type="text" class="${INPUT}" placeholder="getgrav-global"></label>
+                  <input data-f="series" type="text" class="${INPUT}" placeholder="my-series"></label>
                 <label class="block text-sm lg:col-span-2"><span class="mb-1 block text-muted-foreground">Description</span>
                   <textarea data-f="description" class="${TEXTAREA}"></textarea></label>
                 <label class="block text-sm"><span class="mb-1 block text-muted-foreground">City</span>
@@ -137,7 +137,7 @@
                 <h4 class="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Add one-off event</h4>
                 <div class="grid gap-3 lg:grid-cols-2">
                   <label class="block text-sm"><span class="mb-1 block text-muted-foreground">Event slug</span>
-                    <input data-ev="slug" type="text" class="${INPUT}" placeholder="brisbane-special"></label>
+                    <input data-ev="slug" type="text" class="${INPUT}" placeholder="summer-meetup"></label>
                   <label class="block text-sm"><span class="mb-1 block text-muted-foreground">Title</span>
                     <input data-ev="title" type="text" class="${INPUT}"></label>
                   <label class="block text-sm lg:col-span-2"><span class="mb-1 block text-muted-foreground">Date label</span>
@@ -209,7 +209,7 @@
       const el = this.querySelector('[data-events]');
       if (!el) return;
       if (!events.length) {
-        el.innerHTML = '<li class="text-muted-foreground">No events in <code>user/data/mud-eventz/events/</code>.</li>';
+        el.innerHTML = '<li class="text-muted-foreground">No events in <code>user/data/eventz/events/</code>.</li>';
         return;
       }
       el.innerHTML = events.map((ev) => {
@@ -298,7 +298,7 @@
       return {
         slug: (this.field('slug')?.value || '').trim(),
         title: (this.field('title')?.value || '').trim(),
-        series: (this.field('series')?.value || 'getgrav-global').trim(),
+        series: (this.field('series')?.value || '').trim(),
         description: (this.field('description')?.value || '').trim(),
         city: (this.field('city')?.value || '').trim(),
         venue: (this.field('venue')?.value || '').trim(),
@@ -311,7 +311,7 @@
           weekday: (this.field('recurrence.weekday')?.value || 'thursday').trim(),
           day_of_month: Number(this.field('recurrence.day_of_month')?.value || 15),
           time: (this.field('recurrence.time')?.value || '18:00').trim(),
-          timezone: (this.field('recurrence.timezone')?.value || 'Australia/Brisbane').trim(),
+          timezone: (this.field('recurrence.timezone')?.value || 'UTC').trim(),
           duration_hours: 2,
         },
       };
@@ -321,7 +321,7 @@
       const el = this.querySelector('[data-chapters]');
       if (!el) return;
       if (!chapters.length) {
-        el.innerHTML = '<li class="text-muted-foreground">No chapters — add one under <code>user/data/mud-eventz/chapters/</code>.</li>';
+        el.innerHTML = '<li class="text-muted-foreground">No chapters — add one under <code>user/data/eventz/chapters/</code>.</li>';
         return;
       }
       el.innerHTML = chapters.map((ch) => {
@@ -433,7 +433,7 @@
       if (!slug || !title) {
         throw new Error('Event slug and title required.');
       }
-      const series = (this.field('series')?.value || 'getgrav-global').trim();
+      const series = (this.field('series')?.value || '').trim();
       this.status('Saving event…');
       const saved = await api('/eventz/admin/event', {
         method: 'POST',
@@ -449,7 +449,6 @@
           venue: (this.field('venue')?.value || '').trim(),
           chat_group: (this.field('default_chat_group')?.value || '').trim(),
           wire: true,
-          notify_email: 'chief@gravmud.site',
         }),
       });
       await this.load();
@@ -469,7 +468,7 @@
       this.fillChapterForm({
         slug: '',
         title: '',
-        series: 'getgrav-global',
+        series: '',
         recurrence: { enabled: true, frequency: 'monthly', day_of_month: 15, time: '18:00', timezone: 'UTC' },
       });
       this.renderChapterEvents([]);

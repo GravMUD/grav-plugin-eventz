@@ -1,5 +1,5 @@
-enabled: true
+enabled: false
 api_route: api/mud-eventz
 public_route: eventz
-notify_email: chief@gravmud.site
+notify_email: ''
 default_messenger_group_prefix: event-

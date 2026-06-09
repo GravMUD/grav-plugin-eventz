@@ -74,8 +74,8 @@ class MudEventzChapters
         $data['description'] = trim((string) ($data['description'] ?? ''));
         $data['city'] = trim((string) ($data['city'] ?? ''));
         $data['venue'] = trim((string) ($data['venue'] ?? ''));
-        $data['series'] = MudEventzRsvp::normalizeSlug((string) ($data['series'] ?? 'getgrav-global'));
-        $data['default_chat_group'] = MudEventzRsvp::normalizeSlug((string) ($data['default_chat_group'] ?? ('getgrav-' . $slug)));
+        $data['series'] = MudEventzRsvp::normalizeSlug((string) ($data['series'] ?? ''));
+        $data['default_chat_group'] = MudEventzRsvp::normalizeSlug((string) ($data['default_chat_group'] ?? ('event-' . $slug)));
         $data['default_forum_board'] = MudEventzRsvp::normalizeSlug((string) ($data['default_forum_board'] ?? 'general'));
         $data['capacity'] = max(0, (int) ($data['capacity'] ?? 40));
         $data['notify_email'] = trim((string) ($data['notify_email'] ?? $this->storage->defaultNotifyEmail()));
@@ -177,11 +177,11 @@ class MudEventzChapters
                 'capacity' => (int) ($chapter['capacity'] ?? 40),
                 'rsvp_open' => true,
                 'notify_email' => (string) ($chapter['notify_email'] ?? ''),
-                'series' => (string) ($chapter['series'] ?? 'getgrav-global'),
+                'series' => (string) ($chapter['series'] ?? ''),
                 'chapter' => $slug,
                 'occurrence_of' => $slug,
                 'forum_board' => (string) ($chapter['default_forum_board'] ?? 'general'),
-                'chat_group' => (string) ($chapter['default_chat_group'] ?? ('getgrav-' . $slug)),
+                'chat_group' => (string) ($chapter['default_chat_group'] ?? ('event-' . $slug)),
             ];
 
             $saved = $this->storage->saveEvent($event, $wire);
@@ -274,11 +274,8 @@ class MudEventzChapters
 
     private function chaptersDir(): string
     {
-        $dir = GRAV_ROOT . '/user/data/mud-eventz/chapters';
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0755, true);
-        }
+        require_once __DIR__ . '/MudEventzData.php';
 
-        return $dir;
+        return MudEventzData::dir($this->grav, 'chapters');
     }
 }

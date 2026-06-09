@@ -18,7 +18,7 @@ Flat-file **events + RSVP** for Grav 2.0 — chapters, recurrence, Admin2 cockpi
 | [Admin2](https://github.com/getgrav/grav-plugin-admin2) | `>=1.0.0` |
 | [API](https://github.com/getgrav/grav-plugin-api) | `>=1.0.0` |
 
-Optional: **grav-mud-messenger** for auto chat groups when you save an event.
+Optional: **messenger** for auto chat groups when you save an event.
 
 ---
 

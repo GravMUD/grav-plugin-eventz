@@ -139,7 +139,7 @@ class MudEventzStorage
             $payload['series'] = $this->seriesForChapter($payload['chapter']);
         }
         if ($payload['series'] === '') {
-            $payload['series'] = $this->normalizeSeries((string) ($this->pluginDefaults()['default_series'] ?? 'getgrav-global'));
+            $payload['series'] = $this->normalizeSeries((string) ($this->pluginDefaults()['default_series'] ?? ''));
         }
         $payload['occurrence_of'] = MudEventzRsvp::normalizeSlug((string) ($payload['occurrence_of'] ?? ''));
         $payload['forum_board'] = MudEventzRsvp::normalizeSlug((string) ($payload['forum_board'] ?? 'general'));
@@ -304,9 +304,9 @@ class MudEventzStorage
             $payload = (new MudEventzChapters($this->grav, $this))->getChapter($chapter, false);
             $ch = is_array($payload['chapter'] ?? null) ? $payload['chapter'] : [];
 
-            return $this->normalizeSeries((string) ($ch['series'] ?? 'getgrav-global'));
+            return $this->normalizeSeries((string) ($ch['series'] ?? ''));
         } catch (\Throwable $e) {
-            return 'getgrav-global';
+            return '';
         }
     }
 
@@ -375,6 +375,9 @@ class MudEventzStorage
     private function csvCell(string $value): string
     {
         $value = str_replace(["\r", "\n"], ' ', $value);
+        if ($value !== '' && preg_match('/^[=+\-@]/', $value)) {
+            $value = "'" . $value;
+        }
         if (str_contains($value, ',') || str_contains($value, '"')) {
             return '"' . str_replace('"', '""', $value) . '"';
         }
@@ -434,11 +437,8 @@ class MudEventzStorage
 
     private function eventsDir(): string
     {
-        $dir = GRAV_ROOT . '/user/data/mud-eventz/events';
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0755, true);
-        }
+        require_once __DIR__ . '/MudEventzData.php';
 
-        return $dir;
+        return MudEventzData::dir($this->grav, 'events');
     }
 }

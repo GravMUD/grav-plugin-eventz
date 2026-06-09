@@ -1,7 +1,7 @@
 name: Eventz
 slug: eventz
 type: plugin
-version: 0.4.0
+version: 0.4.1
 description: Flat-file events + RSVP for Grav 2.0 — chapters, recurrence, Admin2 cockpit, iCal, messenger wire-ins.
 icon: calendar-days
 author:
@@ -26,7 +26,7 @@ form:
       type: toggle
       label: Plugin Status
       highlight: 1
-      default: 1
+      default: 0
       options:
         1: Enabled
         0: Disabled
@@ -44,7 +44,7 @@ form:
     notify_email:
       type: email
       label: Default organiser email (RSVP notifications)
-      default: chief@gravmud.site
+      default: ''
     default_messenger_group_prefix:
       type: text
       label: Messenger group prefix (future auto-wire)

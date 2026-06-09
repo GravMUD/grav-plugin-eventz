@@ -34,7 +34,7 @@ class MudEventzFences
         $wrapClass = trim((string) ($attrs['wrap-class'] ?? $data['wrap-class'] ?? 'gg-meetup-rsvp gg-campaign-card'));
         $title = trim((string) ($data['title'] ?? ''));
         if ($title === '' && $mode === 'event') {
-            $title = 'RSVP — free pizza needs a headcount 🍕';
+            $title = 'RSVP';
         }
 
         $mountAttrs = 'class="mud-eventz" data-mud-eventz data-mode="' . self::esc($mode) . '" data-api="' . self::esc($api) . '"';
@@ -51,7 +51,7 @@ class MudEventzFences
         $head = $title !== '' ? '<h2>' . self::esc($title) . '</h2>' : '';
         $note = trim((string) ($data['note'] ?? ''));
         if ($note === '' && $mode === 'event') {
-            $note = 'Flat-file RSVP via Eventz — zero Meetup tax · Chief reads the JSON.';
+            $note = 'Flat-file RSVP via Eventz.';
         }
         $foot = $note !== '' ? '<p class="gg-muted-sm" style="margin-top:1rem;">' . self::inline($note) . '</p>' : '';
 

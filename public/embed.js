@@ -49,7 +49,7 @@
   if (iframeMount) {
     var mode = iframeMount.getAttribute('data-mode') || 'list';
     var event = iframeMount.getAttribute('data-event') || '';
-    var series = iframeMount.getAttribute('data-series') || 'getgrav-global';
+    var series = iframeMount.getAttribute('data-series') || '';
     var height = iframeMount.getAttribute('data-height') || '520';
     var src = origin + prefix + '/embed?mode=' + encodeURIComponent(mode);
     if (event) src += '&event=' + encodeURIComponent(event);

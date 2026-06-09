@@ -32,10 +32,14 @@ class MudEventzWire
     private static function ensureMessengerGroup(Grav $grav, string $groupId, array $event): array
     {
         if (!self::messengerInstalled()) {
-            return ['ok' => false, 'reason' => 'grav-mud-messenger not installed'];
+            return ['ok' => false, 'reason' => 'messenger not installed'];
         }
 
-        $groups = $grav['config']->get('plugins.grav-mud-messenger.groups');
+        $cfg = (array) $grav['config']->get('plugins.messenger', []);
+        if ($cfg === []) {
+            $cfg = (array) $grav['config']->get('plugins.grav-mud-messenger', []);
+        }
+        $groups = $cfg['groups'] ?? null;
         if (is_array($groups) && isset($groups[$groupId])) {
             return ['ok' => true, 'group' => $groupId, 'action' => 'exists'];
         }
@@ -44,8 +48,8 @@ class MudEventzWire
         $city = trim((string) ($event['city'] ?? ''));
         $description = $city !== '' ? $title . ' · ' . $city : $title;
 
-        require_once GRAV_ROOT . '/user/plugins/grav-mud-messenger/classes/MudMessengerGroups.php';
-        $written = \Grav\Plugin\GravMudMessenger\MudMessengerGroups::upsert(
+        require_once GRAV_ROOT . '/user/plugins/messenger/classes/MudMessengerGroups.php';
+        $written = \Grav\Plugin\Messenger\MudMessengerGroups::upsert(
             $grav,
             $groupId,
             $title,
@@ -96,7 +100,8 @@ class MudEventzWire
 
     private static function messengerInstalled(): bool
     {
-        return is_file(GRAV_ROOT . '/user/plugins/grav-mud-messenger/grav-mud-messenger.php');
+        return is_file(GRAV_ROOT . '/user/plugins/messenger/messenger.php')
+            || is_file(GRAV_ROOT . '/user/plugins/grav-mud-messenger/grav-mud-messenger.php');
     }
 
     private static function forumzInstalled(): bool

@@ -24,12 +24,10 @@ class EventzPlugin extends Plugin
             'onMudFenceRender' => ['onMudFenceRender', 0],
         ];
 
-        if (self::supportsGravApiBridge()) {
-            $events['onApiRegisterRoutes'] = ['onApiRegisterRoutes', 0];
-            $events['onApiCollectPublicRoutes'] = ['onApiCollectPublicRoutes', 0];
-            $events['onApiSidebarItems'] = ['onApiSidebarItems', 0];
-            $events['onApiPluginPageInfo'] = ['onApiPluginPageInfo', 0];
-        }
+        $events['onApiRegisterRoutes'] = ['onApiRegisterRoutes', 0];
+        $events['onApiCollectPublicRoutes'] = ['onApiCollectPublicRoutes', 0];
+        $events['onApiSidebarItems'] = ['onApiSidebarItems', 0];
+        $events['onApiPluginPageInfo'] = ['onApiPluginPageInfo', 0];
 
         return $events;
     }
@@ -41,12 +39,7 @@ class EventzPlugin extends Plugin
             return [];
         }
 
-        $cfg = (array) $grav['config']->get('plugins.eventz', []);
-        if ($cfg !== []) {
-            return $cfg;
-        }
-
-        return (array) $grav['config']->get('plugins.grav-mud-eventz', []);
+        return (array) $grav['config']->get('plugins.eventz', []);
     }
 
     public function onPluginsInitializedEarly(): void
@@ -82,19 +75,6 @@ class EventzPlugin extends Plugin
         require_once __DIR__ . '/classes/MudEventzSite.php';
         require_once __DIR__ . '/classes/MudEventzRouter.php';
         (new MudEventzRouter($this->grav, $cfg))->handle();
-
-        $action = $this->apiAction();
-        if ($action === null) {
-            return;
-        }
-
-        if (class_exists(\Grav\Plugin\Api\ApiRouteCollector::class)) {
-            return;
-        }
-
-        require_once __DIR__ . '/classes/MudEventz.php';
-        (new \Grav\Plugin\Eventz\MudEventz($this->grav))->handle($action);
-        exit;
     }
 
     public function onApiRegisterRoutes(Event $event): void
@@ -167,7 +147,7 @@ class EventzPlugin extends Plugin
             return true;
         }
 
-        return (bool) ($user->get('access.api.access') || $user->get('access.api.system.read'));
+        return (bool) ($user->get('access.api.config.read') || $user->get('access.api.config.write'));
     }
 
     public function onApiCollectPublicRoutes(Event $event): void
@@ -195,7 +175,7 @@ class EventzPlugin extends Plugin
         $this->grav['twig']->twig_vars['eventz'] = [
             'enabled' => true,
             'name' => 'Eventz',
-            'version' => '0.4.0',
+            'version' => '0.4.1',
             'api_route' => $route,
             'api' => MudEventzSite::apiBaseUrl($this->grav, $cfg),
             'public_route' => $publicRoute,
@@ -232,23 +212,6 @@ class EventzPlugin extends Plugin
         if ($html !== null && $html !== '') {
             $event['html'] = $html;
         }
-    }
-
-    private function apiAction(): ?string
-    {
-        $cfg = self::pluginConfig($this->grav);
-        $route = trim((string) ($cfg['api_route'] ?? 'api/mud-eventz'), '/');
-        $path = trim((string) $this->grav['uri']->path(), '/');
-
-        if ($path === $route) {
-            return '';
-        }
-
-        if (!str_starts_with($path, $route . '/')) {
-            return null;
-        }
-
-        return trim(substr($path, strlen($route)), '/');
     }
 
     private static function supportsGravApiBridge(): bool
