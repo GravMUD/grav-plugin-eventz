@@ -1,7 +1,7 @@
 name: Eventz
 slug: eventz
 type: plugin
-version: 0.4.1
+version: 0.4.2
 description: Flat-file events + RSVP for Grav 2.0 — chapters, recurrence, Admin2 cockpit, iCal, messenger wire-ins.
 icon: calendar-days
 author:

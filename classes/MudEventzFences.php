@@ -29,7 +29,7 @@ class MudEventzFences
         }
 
         $publicRoute = trim((string) ($attrs['public-route'] ?? $data['public-route'] ?? 'eventz'), '/');
-        $api = trim((string) ($attrs['api'] ?? $data['api'] ?? '/api/v1/mud-eventz'));
+        $api = trim((string) ($attrs['api'] ?? $data['api'] ?? '/api/mud-eventz'));
         $assetBase = '/' . $publicRoute;
         $wrapClass = trim((string) ($attrs['wrap-class'] ?? $data['wrap-class'] ?? 'gg-meetup-rsvp gg-campaign-card'));
         $title = trim((string) ($data['title'] ?? ''));

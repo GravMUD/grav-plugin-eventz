@@ -1,3 +1,10 @@
+# v0.4.2
+## 06/12/2026
+
+1. [](#bugfix)
+    * **Grav API `/api/v1/*` 500 on RC5 deploys** — public JSON at `/api/mud-eventz` via early `interceptPublicApi()`
+    * **Embed defaults** — fence + Twig API base use legacy direct path, not `/api/v1/mud-eventz`
+
 # v0.4.1
 ## 06/05/2026
 

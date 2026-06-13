@@ -17,7 +17,10 @@ class EventzPlugin extends Plugin
     public static function getSubscribedEvents(): array
     {
         $events = [
-            'onPluginsInitialized' => [['onPluginsInitializedEarly', 100000]],
+            'onPluginsInitializedEarly' => [
+                ['interceptPublicApi', 100001],
+                ['onPluginsInitializedEarly', 100000],
+            ],
             'onPagesInitialized' => ['onPagesInitialized', 0],
             'onPageNotFound' => ['onPagesInitialized', 0],
             'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
@@ -50,11 +53,11 @@ class EventzPlugin extends Plugin
 
         require_once __DIR__ . '/classes/MudEventzSite.php';
         require_once __DIR__ . '/classes/MudEventzRouter.php';
+        require_once __DIR__ . '/classes/MudEventz.php';
 
         if (self::supportsGravApiBridge()) {
             require_once __DIR__ . '/classes/MudEventzApiBridgeController.php';
             require_once __DIR__ . '/classes/MudEventzAdminBridgeController.php';
-            require_once __DIR__ . '/classes/MudEventz.php';
         }
 
         $cfg = self::pluginConfig($this->grav);
@@ -62,6 +65,30 @@ class EventzPlugin extends Plugin
 
         if (MudEventzSite::matchesPublicPath($path, $cfg)) {
             (new MudEventzRouter($this->grav, $cfg))->handle();
+        }
+    }
+
+    /** Direct public JSON — bypass Grav API middleware when /api/v1/* bridge fails. */
+    public function interceptPublicApi(): void
+    {
+        if (!$this->isEnabled() || $this->isAdmin()) {
+            return;
+        }
+
+        $cfg = self::pluginConfig($this->grav);
+        $legacy = trim((string) ($cfg['api_route'] ?? 'api/mud-eventz'), '/');
+        $prefixes = array_values(array_unique([$legacy, MudEventzSite::apiRoute($cfg)]));
+        $path = trim((string) $this->grav['uri']->path(), '/');
+
+        foreach ($prefixes as $apiPrefix) {
+            if ($apiPrefix === '' || ($path !== $apiPrefix && !str_starts_with($path, $apiPrefix . '/'))) {
+                continue;
+            }
+
+            require_once __DIR__ . '/classes/MudEventz.php';
+            $action = $path === $apiPrefix ? '' : trim(substr($path, strlen($apiPrefix)), '/');
+            (new MudEventz($this->grav))->handle($action);
+            exit;
         }
     }
 
@@ -175,7 +202,7 @@ class EventzPlugin extends Plugin
         $this->grav['twig']->twig_vars['eventz'] = [
             'enabled' => true,
             'name' => 'Eventz',
-            'version' => '0.4.1',
+            'version' => '0.4.2',
             'api_route' => $route,
             'api' => MudEventzSite::apiBaseUrl($this->grav, $cfg),
             'public_route' => $publicRoute,

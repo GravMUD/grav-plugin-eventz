@@ -66,13 +66,21 @@ class MudEventzWire
     /** @param array<string, mixed> $event @return array<string, mixed> */
     private static function ensureForumThread(Grav $grav, string $board, string $slug, array $event): array
     {
-        $threadFile = GRAV_ROOT . '/user/data/mud-forumz/' . $board . '/' . $slug . '.json';
+        $dataRoot = is_dir(GRAV_ROOT . '/user/data/forumz')
+            ? GRAV_ROOT . '/user/data/forumz'
+            : GRAV_ROOT . '/user/data/mud-forumz';
+        $threadFile = $dataRoot . '/' . $board . '/' . $slug . '.json';
         if (is_file($threadFile)) {
             return ['ok' => true, 'board' => $board, 'thread' => $slug, 'action' => 'exists'];
         }
 
-        require_once GRAV_ROOT . '/user/plugins/grav-mud-forumz/classes/MudForumzStorage.php';
-        $storage = new \Grav\Plugin\GravMudForumz\MudForumzStorage($grav);
+        if (is_file(GRAV_ROOT . '/user/plugins/forumz/classes/ForumzStorage.php')) {
+            require_once GRAV_ROOT . '/user/plugins/forumz/classes/ForumzStorage.php';
+            $storage = new \Grav\Plugin\Forumz\ForumzStorage($grav);
+        } else {
+            require_once GRAV_ROOT . '/user/plugins/mud-forumz/classes/MudForumzStorage.php';
+            $storage = new \Grav\Plugin\MudForumz\MudForumzStorage($grav);
+        }
 
         $title = trim((string) ($event['title'] ?? $slug));
         $body = trim((string) ($event['description'] ?? ''));
@@ -106,6 +114,7 @@ class MudEventzWire
 
     private static function forumzInstalled(): bool
     {
-        return is_file(GRAV_ROOT . '/user/plugins/grav-mud-forumz/classes/MudForumzStorage.php');
+        return is_file(GRAV_ROOT . '/user/plugins/forumz/classes/ForumzStorage.php')
+            || is_file(GRAV_ROOT . '/user/plugins/mud-forumz/classes/MudForumzStorage.php');
     }
 }

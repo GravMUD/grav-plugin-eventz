@@ -15,12 +15,7 @@ class MudEventzSite
     /** @param array<string, mixed> $config */
     public static function apiRoute(array $config): string
     {
-        $route = trim((string) ($config['api_route'] ?? 'api/mud-eventz'), '/');
-        if (self::supportsGravApiBridge()) {
-            return 'api/v1/mud-eventz';
-        }
-
-        return $route;
+        return trim((string) ($config['api_route'] ?? 'api/mud-eventz'), '/');
     }
 
     /** @param array<string, mixed> $config */
